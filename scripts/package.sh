@@ -124,12 +124,14 @@ function buildpack::archive() {
   util::print::title "Packaging ${buildpack_type} into ${BUILD_DIR}/buildpack.tgz..."
 
   if [[ -f "${ROOT_DIR}/.libbuildpack" ]]; then
+  util::print::title "Running packager"
     packager \
       --uncached \
       --archive \
       --version "${version}" \
       "${BUILD_DIR}/buildpack"
   else
+  util::print::title "Running Jam"
     jam pack \
       "--${buildpack_type}" "${ROOT_DIR}/${buildpack_type}.toml"\
       --version "${version}" \

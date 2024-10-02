@@ -11,7 +11,7 @@ api = "0.7"
     uri = "https://github.com/paketo-buildpacks/npm-install/blob/main/LICENSE"
 
 [metadata]
-  include-files = ["bin/build", "bin/detect", "bin/run", "bin/setup-symlinks", "buildpack.toml"]
+  include-files = ["linux/amd64/bin/build", "linux/amd64/bin/detect", "linux/amd64/bin/run", "linux/amd64/bin/setup-symlinks", "linux/arm64/bin/build", "linux/arm64/bin/detect", "linux/arm64/bin/run", "linux/arm64/bin/setup-symlinks", "buildpack.toml"]
   pre-package = "./scripts/build.sh"
 
   [[metadata.configurations]]
@@ -47,3 +47,11 @@ api = "0.7"
 
 [[stacks]]
   id = "*"
+
+[[targets]]
+  os = "linux"
+  arch = "amd64"
+
+[[targets]]
+  os = "linux"
+  arch = "arm64"

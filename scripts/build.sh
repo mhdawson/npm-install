@@ -25,7 +25,7 @@ function main() {
     esac
   done
 
-  mkdir -p "${BUILDPACKDIR}/bin"
+  mkdir -p "${BUILDPACKDIR}/linux"
 
   run::build
   cmd::build
@@ -44,15 +44,24 @@ USAGE
 
 function run::build() {
   if [[ -f "${BUILDPACKDIR}/run/main.go" ]]; then
-    pushd "${BUILDPACKDIR}/bin" > /dev/null || return
       printf "%s" "Building run... "
 
       GOOS=linux \
+      GOARCH="amd64" \
       CGO_ENABLED=0 \
         go build \
           -ldflags="-s -w" \
-          -o "run" \
+          -o "linux/amd64/bin/run" \
             "${BUILDPACKDIR}/run"
+
+      GOOS=linux \
+      GOARCH="arm64" \
+      CGO_ENABLED=0 \
+        go build \
+          -ldflags="-s -w" \
+          -o "linux/arm64/bin/run" \
+            "${BUILDPACKDIR}/run"
+
 
       echo "Success!"
 
@@ -67,11 +76,11 @@ function run::build() {
       for name in "${names[@]}"; do
         printf "%s" "Linking ${name}... "
 
-        ln -sf "run" "${name}"
+        ln -sf "run" "linux/amd64/bin/${name}"
+        ln -sf "run" "linux/arm64/bin/${name}"
 
         echo "Success!"
       done
-    popd > /dev/null || return
   fi
 }
 
@@ -85,10 +94,19 @@ function cmd::build() {
         printf "%s" "Building ${name}... "
 
         GOOS="linux" \
+        GOARCH="amd64" \
         CGO_ENABLED=0 \
           go build \
             -ldflags="-s -w" \
-            -o "${BUILDPACKDIR}/bin/${name}" \
+            -o "${BUILDPACKDIR}/linux/amd64/bin/${name}" \
+              "${src}/main.go"
+
+        GOOS="linux" \
+        GOARCH="arm64" \
+        CGO_ENABLED=0 \
+          go build \
+            -ldflags="-s -w" \
+            -o "${BUILDPACKDIR}/linux/arm64/bin/${name}" \
               "${src}/main.go"
 
         echo "Success!"
