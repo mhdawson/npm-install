@@ -124,14 +124,12 @@ function buildpack::archive() {
   util::print::title "Packaging ${buildpack_type} into ${BUILD_DIR}/buildpack.tgz..."
 
   if [[ -f "${ROOT_DIR}/.libbuildpack" ]]; then
-  util::print::title "Running packager"
     packager \
       --uncached \
       --archive \
       --version "${version}" \
       "${BUILD_DIR}/buildpack"
   else
-  util::print::title "Running Jam"
     jam pack \
       "--${buildpack_type}" "${ROOT_DIR}/${buildpack_type}.toml"\
       --version "${version}" \
@@ -161,10 +159,19 @@ function buildpackage::create() {
 
     cd $cwd
   else
+    cwd=$(pwd)
+    cd ${BUILD_DIR}
+    mkdir cnbdir
+    cd cnbdir
+    cp ../buildpack.tgz .
+    tar -xvf buildpack.tgz
+    rm buildpack.tgz
+
     pack \
       buildpack package "${output}" \
-        --path "${BUILD_DIR}/buildpack.tgz" \
         --format file
+    cd ..
+    rm -rf cnbdir
   fi
 }
 
